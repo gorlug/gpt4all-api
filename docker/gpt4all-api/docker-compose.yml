@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+  bot:
+    container_name: gpt4all-api
+    image: node
+    restart: always
+    ports:
+      - 100.106.96.139:3143:3000
+    volumes:
+      - ./api:/api
+    user: "node"
+    working_dir: /api
+    environment:
+      - NODE_ENV=production
+    command: "node main.js"
+    logging:
+      driver: journald
