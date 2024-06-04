@@ -1,0 +1,11 @@
+stages:
+  - deploy
+
+build-deploy:
+  tags:
+    - couchdb-1
+  stage: deploy
+  only:
+    - main
+  script:
+    - ./deploy.sh
