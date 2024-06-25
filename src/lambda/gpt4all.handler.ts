@@ -30,6 +30,14 @@ export const handler = async (
     logger: new LambdaLoggerService(),
   });
   const result = await gpt4Service.createCompletion(body);
+  if (result instanceof Error) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        message: result.message,
+      }),
+    };
+  }
   return {
     statusCode: 200,
     body: JSON.stringify(result),

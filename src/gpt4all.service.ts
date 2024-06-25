@@ -19,7 +19,7 @@ export interface LoggerService {
 export abstract class Gpt4AllService {
   abstract createCompletion(
     request: CreateCompletionRequest,
-  ): Promise<CompletionResult>;
+  ): Promise<CompletionResult | Error>;
 }
 
 export interface Gpt4AllServiceConfig {
@@ -85,7 +85,7 @@ export class Gpt4allServiceImpl extends Gpt4AllService {
   async createCompletion({
     messages,
     temperature,
-  }: CreateCompletionRequest): Promise<CompletionResult> {
+  }: CreateCompletionRequest): Promise<CompletionResult | Error> {
     const start = Date.now();
     this.logger.debug('creating completion');
     const model = await this.initModel();
@@ -96,11 +96,17 @@ export class Gpt4allServiceImpl extends Gpt4AllService {
       }
     }
     // model.dispose();
-    const result = await createCompletion(model, messages, {
-      temperature,
-    });
-    this.logger.debug(`completion took ${Date.now() - start} ms`);
-    return result;
+    try {
+      const result = await createCompletion(model, messages, {
+        temperature,
+      });
+      this.logger.debug(`completion took ${Date.now() - start} ms`);
+      console.log('result', JSON.stringify(result, null, 2));
+      return result;
+    } catch (e) {
+      console.error(e);
+      return new Error('failed to create completion');
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Post } from '@nestjs/common';
 import { CreateCompletionRequest, Gpt4AllService } from './gpt4all.service';
 import { CompletionResult } from 'gpt4all';
 
@@ -11,6 +11,10 @@ export class AppController {
     @Body() request: CreateCompletionRequest,
   ): Promise<CompletionResult> {
     console.log('request', JSON.stringify(request));
-    return this.appService.createCompletion(request);
+    const result = await this.appService.createCompletion(request);
+    if (result instanceof Error) {
+      throw new HttpException(result.message, 500);
+    }
+    return result;
   }
 }
